@@ -42,7 +42,7 @@
     ],
     "scheme": "prisappen",
     "extra": {
-      "apiUrl": "http://192.168.86.135:3000"
+      "apiUrl": "https://1price-project-production.up.railway.app"
     }
   }
 }
