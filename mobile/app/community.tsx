@@ -261,12 +261,19 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   backButton: {
-    marginBottom: 12,
+    marginBottom: 16,
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderColor: '#fff',
+    borderRadius: 8,
+    alignSelf: 'flex-start',
   },
   backButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#fff',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   title: {
     fontSize: 28,

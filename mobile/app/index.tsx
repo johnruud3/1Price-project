@@ -10,7 +10,7 @@ export default function HomeScreen() {
       <StatusBar style="light" />
 
       <View style={styles.header}>
-        <Text style={styles.title}>🛒 Pris-Appen</Text>
+        <Text style={styles.title}>MatBoks</Text>
         <Text style={styles.subtitle}>
           Skann strekkoder og få AI-drevet prisvurdering
         </Text>
@@ -43,6 +43,12 @@ export default function HomeScreen() {
         <Text style={styles.footerText}>
           Norsk markedskontekst • AI-drevet analyse
         </Text>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            av John-Kristian G. Ruud
+          </Text>
+        </View>
       </View>
     </View>
   );
