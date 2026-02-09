@@ -60,9 +60,9 @@ EVALUERINGSKRITERIER:
 - Vær hjelpsom, ikke nedlatende
 
 CONFIDENCE NIVÅER:
-- "high": Mange fellesskapspriser (10+) + tydelig kategori
-- "medium": Noen fellesskapspriser (3-9) ELLER god kategorianalyse
-- "low": Få/ingen fellesskapspriser OG usikker kategori
+- "high": 10+ fellesskapspriser (verifisert av mange brukere)
+- "medium": 3-9 fellesskapspriser (noe brukerdata tilgjengelig)
+- "low": 0-2 fellesskapspriser (lite/ingen brukerdata, basert på estimater)
 
 Returner alltid et JSON-objekt med denne strukturen:
 {
