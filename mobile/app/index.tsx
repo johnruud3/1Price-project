@@ -7,7 +7,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
       <View style={styles.header}>
         <Text style={styles.title}>🛒 Pris-Appen</Text>
@@ -52,10 +52,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#6366F1',
+    justifyContent: 'space-between',
   },
   header: {
     alignItems: 'center',
-    marginTop: 80,
+    marginTop: 60,
     paddingHorizontal: 20,
   },
   title: {
@@ -72,12 +73,14 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
     paddingHorizontal: 20,
+    marginBottom: 20,
     lineHeight: 26,
   },
   buttonContainer: {
     gap: 16,
-    marginBottom: 40,
     paddingHorizontal: 20,
+    marginBottom: 20,
+    marginTop: 'auto',
   },
   primaryButton: {
     backgroundColor: '#fff',
