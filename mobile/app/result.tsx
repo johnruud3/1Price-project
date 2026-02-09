@@ -112,9 +112,35 @@ export default function ResultScreen() {
       case 'good':
         return 'God pris';
       case 'average':
-        return 'Gjennomsnittlig pris';
+        return 'Gjennomsnittlig';
       case 'expensive':
-        return 'Dyr pris';
+        return 'Dyr';
+      default:
+        return 'Ukjent';
+    }
+  };
+
+  const getConfidenceColor = (confidence: string) => {
+    switch (confidence) {
+      case 'high':
+        return '#34C759';
+      case 'medium':
+        return '#FF9500';
+      case 'low':
+        return '#FF3B30';
+      default:
+        return '#999';
+    }
+  };
+
+  const getConfidenceLabel = (confidence: string) => {
+    switch (confidence) {
+      case 'high':
+        return 'Høy sikkerhet';
+      case 'medium':
+        return 'Middels sikkerhet';
+      case 'low':
+        return 'Lav sikkerhet';
       default:
         return 'Ukjent';
     }
@@ -187,8 +213,18 @@ export default function ResultScreen() {
             </View>
 
             <View style={styles.explanationCard}>
-              <Text style={styles.explanationTitle}>Vurdering</Text>
+              <View style={styles.explanationHeader}>
+                <Text style={styles.explanationTitle}>Vurdering</Text>
+                <View style={[styles.confidenceBadge, { backgroundColor: getConfidenceColor(evaluation.confidence) }]}>
+                  <Text style={styles.confidenceText}>{getConfidenceLabel(evaluation.confidence)}</Text>
+                </View>
+              </View>
               <Text style={styles.explanationText}>{evaluation.explanation}</Text>
+              {evaluation.confidence === 'low' && (
+                <Text style={styles.disclaimerText}>
+                  ⚠️ Begrenset data tilgjengelig. Evalueringen er basert på estimater.
+                </Text>
+              )}
             </View>
 
             {!contributed && (
@@ -351,16 +387,37 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
   },
+  explanationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   explanationTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
     color: '#333',
+  },
+  confidenceBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  confidenceText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#fff',
   },
   explanationText: {
     fontSize: 16,
     lineHeight: 24,
     color: '#666',
+  },
+  disclaimerText: {
+    fontSize: 13,
+    color: '#FF9500',
+    marginTop: 12,
+    fontStyle: 'italic',
   },
   newScanButton: {
     backgroundColor: '#007AFF',
