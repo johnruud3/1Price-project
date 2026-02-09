@@ -19,7 +19,8 @@
       "bundleIdentifier": "com.prisappen.app",
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": false,
-        "UIStatusBarStyle": "UIStatusBarStyleLightContent"
+        "UIStatusBarStyle": "UIStatusBarStyleLightContent",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -29,7 +30,8 @@
       },
       "package": "com.prisappen.app",
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -46,7 +48,11 @@
     ],
     "scheme": "prisappen",
     "extra": {
-      "apiUrl": "https://1price-project-production.up.railway.app"
+      "apiUrl": "https://1price-project-production.up.railway.app",
+      "router": {},
+      "eas": {
+        "projectId": "a562f803-8c39-476d-b189-3023c9a69151"
+      }
     }
   }
 }
