@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { evaluatePrice } from '@/services/api';
+import { evaluatePrice, submitPrice } from '@/services/api';
 import { saveToHistory } from '@/services/storage';
 import { PriceEvaluation } from '@/types';
 
@@ -21,6 +21,10 @@ export default function ResultScreen() {
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
   const [evaluation, setEvaluation] = useState<PriceEvaluation | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [contributed, setContributed] = useState(false);
+  const [storeName, setStoreName] = useState('');
+  const [location, setLocation] = useState('');
 
   const handleEvaluate = async () => {
     if (!price || parseFloat(price) <= 0) {
@@ -45,6 +49,35 @@ export default function ResultScreen() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleContribute = async () => {
+    if (!evaluation) return;
+
+    setSubmitting(true);
+    try {
+      await submitPrice({
+        barcode: barcode || '',
+        product_name: evaluation.product.name,
+        price: evaluation.price,
+        currency: 'NOK',
+        store_name: storeName || undefined,
+        location: location || undefined,
+      });
+
+      setContributed(true);
+      Alert.alert(
+        'Takk!',
+        'Prisen din er lagt til i databasen og vil hjelpe andre brukere.'
+      );
+    } catch (error) {
+      Alert.alert(
+        'Feil',
+        'Kunne ikke sende inn prisen. Prøv igjen senere.'
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -157,6 +190,49 @@ export default function ResultScreen() {
               <Text style={styles.explanationTitle}>Vurdering</Text>
               <Text style={styles.explanationText}>{evaluation.explanation}</Text>
             </View>
+
+            {!contributed && (
+              <View style={styles.contributeSection}>
+                <Text style={styles.contributeTitle}>Bidra til fellesskapet 🤝</Text>
+                <Text style={styles.contributeDescription}>
+                  Hjelp andre ved å dele denne prisen. Jo flere som bidrar, jo bedre blir evalueringene!
+                </Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Butikk (valgfritt)"
+                  value={storeName}
+                  onChangeText={setStoreName}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Sted (valgfritt)"
+                  value={location}
+                  onChangeText={setLocation}
+                />
+
+                <TouchableOpacity
+                  style={[styles.contributeButton, submitting && styles.buttonDisabled]}
+                  onPress={handleContribute}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.contributeButtonText}>Bidra med pris</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {contributed && (
+              <View style={styles.thanksCard}>
+                <Text style={styles.thanksEmoji}>🎉</Text>
+                <Text style={styles.thanksText}>Takk for ditt bidrag!</Text>
+                <Text style={styles.thanksSubtext}>Du hjelper andre med å ta bedre kjøpsbeslutninger.</Text>
+              </View>
+            )}
 
             <TouchableOpacity
               style={styles.newScanButton}
@@ -308,5 +384,59 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  contributeSection: {
+    backgroundColor: '#f0f8ff',
+    padding: 20,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+  },
+  contributeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#007AFF',
+  },
+  contributeDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  contributeButton: {
+    backgroundColor: '#34C759',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  contributeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  thanksCard: {
+    backgroundColor: '#f0fff4',
+    padding: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#34C759',
+  },
+  thanksEmoji: {
+    fontSize: 48,
+    marginBottom: 8,
+  },
+  thanksText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#34C759',
+    marginBottom: 4,
+  },
+  thanksSubtext: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
