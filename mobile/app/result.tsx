@@ -136,11 +136,11 @@ export default function ResultScreen() {
   const getConfidenceLabel = (confidence: string) => {
     switch (confidence) {
       case 'high':
-        return 'Høy sikkerhet';
+        return 'Mye data';
       case 'medium':
-        return 'Middels sikkerhet';
+        return 'Noe data';
       case 'low':
-        return 'Lav sikkerhet';
+        return 'Lite data';
       default:
         return 'Ukjent';
     }
