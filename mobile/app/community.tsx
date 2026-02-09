@@ -119,7 +119,11 @@ export default function CommunityScreen() {
     const countText = item.submission_count > 1 ? ` (${item.submission_count} bidrag)` : '';
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => router.push(`/product-detail?barcode=${item.barcode}&name=${encodeURIComponent(item.product_name)}`)}
+        activeOpacity={0.7}
+      >
         <View style={styles.cardHeader}>
           <Text style={styles.productName} numberOfLines={2}>
             {item.product_name}
@@ -152,7 +156,7 @@ export default function CommunityScreen() {
         </View>
 
         <Text style={styles.barcode}>Strekkode: {item.barcode}</Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 
