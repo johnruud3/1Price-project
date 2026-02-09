@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import evaluateRouter from './routes/evaluate.js';
 import pricesRouter from './routes/prices.js';
 import groupedPricesRouter from './routes/groupedPrices.js';
+import adminRouter from './routes/admin.js';
 
 dotenv.config();
 
@@ -13,6 +14,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Serve static files for admin dashboard
+app.use('/admin', express.static('public'));
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Pris-Appen API is running' });
 });
@@ -20,6 +24,7 @@ app.get('/health', (req, res) => {
 app.use('/api', evaluateRouter);
 app.use('/api/prices', pricesRouter);
 app.use('/api/prices', groupedPricesRouter);
+app.use('/api/admin', adminRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 Pris-Appen API running on http://localhost:${PORT}`);

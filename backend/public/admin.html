@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pris-Appen Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { margin-bottom: 30px; color: #333; }
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-box { background: #f9f9f9; padding: 16px; border-radius: 8px; }
+        .stat-label { font-size: 12px; color: #666; margin-bottom: 4px; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #007AFF; }
+        .stat-unit { font-size: 14px; color: #999; }
+        .progress-bar { background: #e0e0e0; height: 24px; border-radius: 12px; overflow: hidden; margin: 16px 0; }
+        .progress-fill { background: linear-gradient(90deg, #34C759, #007AFF); height: 100%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; }
+        button { background: #007AFF; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #0051D5; }
+        button.danger { background: #FF3B30; }
+        button.danger:hover { background: #D32F2F; }
+        .auth-section { margin-bottom: 30px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; width: 300px; margin-right: 10px; }
+        .hidden { display: none; }
+        .error { color: #FF3B30; margin-top: 10px; }
+        .success { color: #34C759; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Pris-Appen Admin Dashboard</h1>
+        
+        <div class="auth-section" id="authSection">
+            <div class="card">
+                <h2>Admin Login</h2>
+                <p style="margin: 16px 0; color: #666;">Enter admin secret to access dashboard</p>
+                <input type="password" id="adminSecret" placeholder="Admin Secret">
+                <button onclick="login()">Login</button>
+                <div id="authError" class="error hidden"></div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="card">
+                <h2>📊 Storage Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Submissions</div>
+                        <div class="stat-value" id="totalSubmissions">-</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Last 30 Days</div>
+                        <div class="stat-value" id="last30Days">-</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Last 90 Days</div>
+                        <div class="stat-value" id="last90Days">-</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Storage Used</div>
+                        <div class="stat-value" id="storageUsed">-</div>
+                        <div class="stat-unit">MB</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 20px; margin-bottom: 10px;">Database Usage</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+                </div>
+                <p style="color: #666; font-size: 14px;">Free tier limit: 500 MB</p>
+            </div>
+
+            <div class="card">
+                <h2>🧹 Cleanup Management</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Eligible for Cleanup</div>
+                        <div class="stat-value" id="cleanupEligible">-</div>
+                        <div class="stat-unit">submissions > 180 days</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Retention Policy</div>
+                        <div class="stat-value">180</div>
+                        <div class="stat-unit">days</div>
+                    </div>
+                </div>
+                
+                <button onclick="runCleanup()" style="margin-top: 20px;">Run Cleanup Now</button>
+                <div id="cleanupResult" class="hidden" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>📈 Data Distribution</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Last 30 Days</div>
+                        <div class="stat-value" id="dist30">-</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">30-90 Days</div>
+                        <div class="stat-value" id="dist90">-</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">90-180 Days</div>
+                        <div class="stat-value" id="dist180">-</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">> 180 Days</div>
+                        <div class="stat-value" id="distOld">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminToken = '';
+        const API_URL = window.location.origin;
+
+        function login() {
+            const secret = document.getElementById('adminSecret').value;
+            adminToken = secret;
+            
+            fetch(`${API_URL}/api/admin/dashboard`, {
+                headers: { 'Authorization': `Bearer ${secret}` }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Invalid credentials');
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                updateDashboard(data);
+            })
+            .catch(err => {
+                document.getElementById('authError').textContent = 'Invalid admin secret';
+                document.getElementById('authError').classList.remove('hidden');
+            });
+        }
+
+        function updateDashboard(data) {
+            const storage = data.storage;
+            const system = data.system_info;
+            
+            document.getElementById('totalSubmissions').textContent = storage.total_submissions.toLocaleString();
+            document.getElementById('last30Days').textContent = storage.last_30_days.toLocaleString();
+            document.getElementById('last90Days').textContent = storage.last_90_days.toLocaleString();
+            document.getElementById('storageUsed').textContent = storage.estimated_size_mb;
+            document.getElementById('cleanupEligible').textContent = storage.older_than_180_days.toLocaleString();
+            
+            const usagePercent = Math.min(100, system.usage_percentage);
+            document.getElementById('progressBar').style.width = usagePercent + '%';
+            document.getElementById('progressBar').textContent = usagePercent.toFixed(1) + '%';
+            
+            document.getElementById('dist30').textContent = storage.last_30_days.toLocaleString();
+            document.getElementById('dist90').textContent = (storage.last_90_days - storage.last_30_days).toLocaleString();
+            document.getElementById('dist180').textContent = (storage.last_180_days - storage.last_90_days).toLocaleString();
+            document.getElementById('distOld').textContent = storage.older_than_180_days.toLocaleString();
+        }
+
+        function runCleanup() {
+            if (!confirm('Are you sure you want to delete all submissions older than 180 days?')) return;
+            
+            const resultDiv = document.getElementById('cleanupResult');
+            resultDiv.textContent = 'Running cleanup...';
+            resultDiv.className = '';
+            
+            fetch(`${API_URL}/api/admin/cleanup`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ retention_days: 180 })
+            })
+            .then(res => res.json())
+            .then(data => {
+                resultDiv.textContent = `✅ Cleanup complete! Deleted ${data.deleted_count} submissions.`;
+                resultDiv.className = 'success';
+                setTimeout(() => location.reload(), 2000);
+            })
+            .catch(err => {
+                resultDiv.textContent = '❌ Cleanup failed: ' + err.message;
+                resultDiv.className = 'error';
+            });
+        }
+    </script>
+</body>
+</html>

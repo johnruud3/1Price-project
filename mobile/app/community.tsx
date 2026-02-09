@@ -29,23 +29,43 @@ export default function CommunityScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = async (append: boolean = false) => {
     try {
+      if (append) {
+        setLoadingMore(true);
+      }
+
       const API_URL = 'https://1price-project-production.up.railway.app';
-      const response = await fetch(`${API_URL}/api/prices/grouped?limit=50`);
+      const currentCount = append ? submissions.length : 0;
+      const response = await fetch(`${API_URL}/api/prices/grouped?limit=${50 + currentCount}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch submissions');
       }
 
       const data = await response.json();
-      setSubmissions(data.prices || []);
+      const newPrices = data.prices || [];
+
+      if (append) {
+        // Check if we got new items
+        if (newPrices.length <= submissions.length) {
+          setHasMore(false);
+        } else {
+          setSubmissions(newPrices);
+        }
+      } else {
+        setSubmissions(newPrices);
+        setHasMore(newPrices.length >= 50);
+      }
     } catch (error) {
       console.error('Failed to fetch community prices:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
+      setLoadingMore(false);
     }
   };
 
@@ -176,9 +196,27 @@ export default function CommunityScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        onEndReached={() => {
+          if (!loadingMore && hasMore && !searchQuery) {
+            fetchSubmissions(true);
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          loadingMore ? (
+            <View style={styles.loadingFooter}>
+              <ActivityIndicator size="small" color="#007AFF" />
+              <Text style={styles.loadingFooterText}>Laster flere...</Text>
+            </View>
+          ) : !hasMore && submissions.length > 0 ? (
+            <View style={styles.loadingFooter}>
+              <Text style={styles.endText}>Du har nådd slutten 🎉</Text>
+            </View>
+          ) : null
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyEmoji}>{searchQuery ? '�' : '�'}</Text>
+            <Text style={styles.emptyEmoji}>{searchQuery ? '🔍' : '📦'}</Text>
             <Text style={styles.emptyText}>
               {searchQuery ? 'Ingen resultater' : 'Ingen priser ennå'}
             </Text>
@@ -319,5 +357,18 @@ const styles = StyleSheet.create({
   emptySubtext: {
     fontSize: 16,
     color: '#666',
+  },
+  loadingFooter: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  loadingFooterText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#666',
+  },
+  endText: {
+    fontSize: 14,
+    color: '#999',
   },
 });
