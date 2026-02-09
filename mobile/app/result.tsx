@@ -279,9 +279,8 @@ export default function ResultScreen() {
 
             <TouchableOpacity
               style={styles.homeButton}
-              onPress={() => router.push('/')}
+              onPress={() => router.push('/scanner')}
             >
-              <Text style={styles.homeButtonText}>Tilbake til hjem</Text>
             </TouchableOpacity>
           </View>
         )}

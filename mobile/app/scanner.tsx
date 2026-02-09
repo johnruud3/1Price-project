@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 
 export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
+  const scannedRef = useRef(false);
   const router = useRouter();
 
   if (!permission) {
@@ -26,23 +26,25 @@ export default function ScannerScreen() {
   }
 
   const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {
-    if (scanned) return;
+    if (scannedRef.current) return;
 
-    setScanned(true);
+    scannedRef.current = true;
 
     router.push({
       pathname: '/result',
       params: { barcode: data }
     });
 
-    setTimeout(() => setScanned(false), 2000);
+    setTimeout(() => {
+      scannedRef.current = false;
+    }, 2000);
   };
 
   return (
     <View style={styles.container}>
       <CameraView
         style={styles.camera}
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        onBarcodeScanned={handleBarCodeScanned}
         barcodeScannerSettings={{
           barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'],
         }}
