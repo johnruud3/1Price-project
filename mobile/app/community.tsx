@@ -11,20 +11,21 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-interface PriceSubmission {
-  id: string;
+interface GroupedPrice {
   barcode: string;
   product_name: string;
-  price: number;
+  min_price: number;
+  max_price: number;
+  submission_count: number;
   currency: string;
-  store_name?: string;
-  location?: string;
-  submitted_at: string;
+  stores: string[];
+  locations: string[];
+  latest_submission: string;
 }
 
 export default function CommunityScreen() {
   const router = useRouter();
-  const [submissions, setSubmissions] = useState<PriceSubmission[]>([]);
+  const [submissions, setSubmissions] = useState<GroupedPrice[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +33,7 @@ export default function CommunityScreen() {
   const fetchSubmissions = async () => {
     try {
       const API_URL = 'https://1price-project-production.up.railway.app';
-      const response = await fetch(`${API_URL}/api/prices/recent?limit=50`);
+      const response = await fetch(`${API_URL}/api/prices/grouped?limit=50`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch submissions');
@@ -63,8 +64,8 @@ export default function CommunityScreen() {
     const query = searchQuery.toLowerCase();
     return (
       item.product_name.toLowerCase().includes(query) ||
-      item.store_name?.toLowerCase().includes(query) ||
-      item.location?.toLowerCase().includes(query) ||
+      item.stores.some((store) => store.toLowerCase().includes(query)) ||
+      item.locations.some((loc) => loc.toLowerCase().includes(query)) ||
       item.barcode.includes(query)
     );
   });
@@ -86,41 +87,54 @@ export default function CommunityScreen() {
     return date.toLocaleDateString('nb-NO', {
       day: 'numeric',
       month: 'short',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
     });
   };
 
-  const renderItem = ({ item }: { item: PriceSubmission }) => (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.productName} numberOfLines={2}>
-          {item.product_name}
-        </Text>
-        <Text style={styles.price}>{item.price} {item.currency}</Text>
-      </View>
+  const renderItem = ({ item }: { item: GroupedPrice }) => {
+    const priceDisplay = item.min_price === item.max_price
+      ? `${item.min_price} ${item.currency}`
+      : `${item.min_price} - ${item.max_price} ${item.currency}`;
 
-      <View style={styles.cardDetails}>
-        {item.store_name && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailIcon}>🏪</Text>
-            <Text style={styles.detailText}>{item.store_name}</Text>
+    const countText = item.submission_count > 1 ? ` (${item.submission_count} bidrag)` : '';
+
+    return (
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.productName} numberOfLines={2}>
+            {item.product_name}
+          </Text>
+          <View>
+            <Text style={styles.price}>{priceDisplay}</Text>
+            {item.submission_count > 1 && (
+              <Text style={styles.countBadge}>{item.submission_count} bidrag</Text>
+            )}
           </View>
-        )}
-        {item.location && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailIcon}>📍</Text>
-            <Text style={styles.detailText}>{item.location}</Text>
-          </View>
-        )}
-        <View style={styles.detailRow}>
-          <Text style={styles.detailIcon}>🕐</Text>
-          <Text style={styles.detailText}>{formatDate(item.submitted_at)}</Text>
         </View>
-      </View>
 
-      <Text style={styles.barcode}>Strekkode: {item.barcode}</Text>
-    </View>
-  );
+        <View style={styles.cardDetails}>
+          {item.stores.length > 0 && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailIcon}>🏪</Text>
+              <Text style={styles.detailText}>{item.stores.join(', ')}</Text>
+            </View>
+          )}
+          {item.locations.length > 0 && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailIcon}>📍</Text>
+              <Text style={styles.detailText}>{item.locations.join(', ')}</Text>
+            </View>
+          )}
+          <View style={styles.detailRow}>
+            <Text style={styles.detailIcon}>🕐</Text>
+            <Text style={styles.detailText}>{formatDate(item.latest_submission)}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.barcode}>Strekkode: {item.barcode}</Text>
+      </View>
+    );
+  };
 
   if (loading) {
     return (
@@ -157,7 +171,7 @@ export default function CommunityScreen() {
       <FlatList
         data={filteredSubmissions}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.barcode}
         contentContainerStyle={styles.list}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -257,6 +271,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#34C759',
+  },
+  countBadge: {
+    fontSize: 11,
+    color: '#666',
+    marginTop: 2,
+    textAlign: 'right',
   },
   cardDetails: {
     gap: 8,
