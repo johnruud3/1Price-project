@@ -51,6 +51,7 @@ export default function HistoryScreen() {
     );
   };
 
+  // API returns English: good | average | expensive
   const getEvaluationColor = (evaluation: string) => {
     switch (evaluation) {
       case 'good':
@@ -74,6 +75,19 @@ export default function HistoryScreen() {
         return '❌';
       default:
         return '❓';
+    }
+  };
+
+  const getEvaluationLabel = (evaluation: string) => {
+    switch (evaluation) {
+      case 'good':
+        return 'Bra';
+      case 'average':
+        return 'Gjennomsnittlig';
+      case 'expensive':
+        return 'Dyrt';
+      default:
+        return evaluation;
     }
   };
 
@@ -142,7 +156,7 @@ export default function HistoryScreen() {
               { color: getEvaluationColor(item.evaluation) },
             ]}
           >
-            {getEvaluationEmoji(item.evaluation)} {item.evaluation}
+            {getEvaluationEmoji(item.evaluation)} {getEvaluationLabel(item.evaluation)}
           </Text>
         </View>
       </View>
@@ -176,7 +190,7 @@ export default function HistoryScreen() {
         <>
           <View style={styles.spendingSummary}>
             <View style={styles.spendingHeader}>
-              <Text style={styles.spendingTitle}>Forbruk</Text>
+              <Text style={styles.spendingTitle}>Varer skannet:</Text>
               <TouchableOpacity
                 style={styles.filterButton}
                 onPress={() => {
@@ -192,7 +206,7 @@ export default function HistoryScreen() {
             </View>
             <Text style={styles.spendingAmount}>{totalSpent.toFixed(2)} NOK</Text>
             <Text style={styles.spendingSubtitle}>
-              {filteredHistory.length} {filteredHistory.length === 1 ? 'kjøp' : 'kjøp'}
+              {filteredHistory.length} {filteredHistory.length === 1 ? 'varer' : 'varer'}
             </Text>
           </View>
 
