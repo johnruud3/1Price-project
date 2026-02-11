@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -10,37 +11,67 @@ export default function HomeScreen() {
       <StatusBar style="light" />
 
       <View style={styles.header}>
-        <Text style={styles.title}>MatBoks</Text>
-        <Text style={styles.subtitle}>
-          Skann strekkoder og få AI-drevet prisvurdering
-        </Text>
         <Image
-          source={require('../assets/Matboksen_logo.png')}
+          source={require('../assets/Matboksen_Logo_Tekst_versjon.png')}
           style={styles.logo}
           resizeMode="contain"
         />
+        <Text style={styles.subtitle}>
+          Skann strekkoder og få AI-drevet prisvurdering
+        </Text>
+        <Text style={styles.subtitle2}>
+          Sammenlign med fellesskapet
+        </Text>
+        <Text style={styles.subtitle3}>
+          Følg prisutvikling!
+        </Text>
       </View>
+
+      <Image
+        source={require('../assets/Mascot_scanning.png')}
+        style={styles.logo2}
+        resizeMode="contain"
+      />
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => router.push('/scanner')}
         >
-          <Text style={styles.primaryButtonText}>📸 Skann produkt</Text>
+          <View style={styles.buttonContent}>
+            <Ionicons name="camera-outline" size={24} color="#6744c9" />
+            <Text style={styles.primaryButtonText}>Skann produkt</Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.secondaryButton}
           onPress={() => router.push('/community')}
         >
-          <Text style={styles.secondaryButtonText}>🤝 Fellesskapspriser</Text>
+          <View style={styles.buttonContent}>
+            <MaterialIcons name="groups" size={20} color="#fff" />
+            <Text style={styles.secondaryButtonText}>Fellesskapspriser</Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.secondaryButton}
           onPress={() => router.push('/history')}
         >
-          <Text style={styles.secondaryButtonText}>📊 Se historikk</Text>
+          <View style={styles.buttonContent}>
+            <Ionicons name="bar-chart-outline" size={20} color="#fff" />
+            <Text style={styles.secondaryButtonText}>Se historikk</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => router.push('/receipt-scanner')}
+        >
+          <View style={styles.buttonContent}>
+            <Ionicons name="receipt-outline" size={20} color="#fff" />
+            <Text style={styles.secondaryButtonText}>Skann kvittering</Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -80,30 +111,52 @@ const styles = StyleSheet.create({
     textShadowRadius: 8,
   },
   subtitle: {
-    fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 12,
+    color: '2b2757',
     textAlign: 'center',
     paddingHorizontal: 20,
-    marginBottom: 20,
-    lineHeight: 26,
+    marginBottom: 3,
+    marginTop: '-30%',
+    lineHeight: 12,
+  },
+  subtitle2: {
+    fontSize: 12,
+    color: '2b2757',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 3,
+    lineHeight: 12,
+  },
+  subtitle3: {
+    fontSize: 12,
+    color: '2b2757',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 0,
+    lineHeight: 12,
   },
   logo: {
-    width: 800,
-    height: 440,
-    marginTop: 5,
-    marginBottom: 35,
+    width: '110%',
+    marginTop: '-20%',
+    height: undefined,
+    aspectRatio: 1.47,
+  },
+  logo2: {
+    width: '170%',
+    height: 300,
+    alignSelf: 'center',
+    marginVertical: 60,
   },
   buttonContainer: {
-    gap: 16,
+    gap: 12,
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 'auto',
   },
   primaryButton: {
     backgroundColor: '#fff',
-    padding: 22,
+    padding: 16,
     borderRadius: 16,
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -111,29 +164,34 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   primaryButtonText: {
-    color: '#6366F1',
-    fontSize: 20,
+    color: '#6744c9',
+    fontSize: 18,
     fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 20,
+    backgroundColor: '#6744c9',
+    padding: 14,
     borderRadius: 16,
-    alignItems: 'center',
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   secondaryButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
   footer: {
     alignItems: 'center',
-    paddingBottom: 30,
+    paddingBottom: 10,
   },
   footerText: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.7)',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
 });

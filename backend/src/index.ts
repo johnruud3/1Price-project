@@ -5,6 +5,7 @@ import evaluateRouter from './routes/evaluate.js';
 import pricesRouter from './routes/prices.js';
 import groupedPricesRouter from './routes/groupedPrices.js';
 import adminRouter from './routes/admin.js';
+import receiptRouter from './routes/receipt.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api', evaluateRouter);
 app.use('/api/prices', pricesRouter);
 app.use('/api/prices', groupedPricesRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/receipt', receiptRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 Pris-Appen API running on http://localhost:${PORT}`);

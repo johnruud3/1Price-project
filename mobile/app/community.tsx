@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#d9c8f8',
+    color: '#8966d8',
   },
   countBadge: {
     fontSize: 11,

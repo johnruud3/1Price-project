@@ -54,6 +54,13 @@ export default function RootLayout() {
           headerShown: false
         }}
       />
+      <Stack.Screen
+        name="receipt-scanner"
+        options={{
+          title: 'Skann kvittering',
+          headerShown: false
+        }}
+      />
     </Stack>
   );
 }

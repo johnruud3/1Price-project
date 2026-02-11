@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { getHistory, clearHistory } from '@/services/storage';
 import { ScanHistoryItem } from '@/types';
@@ -15,6 +16,7 @@ export default function HistoryScreen() {
   const router = useRouter();
   const [history, setHistory] = useState<ScanHistoryItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [filterPeriod, setFilterPeriod] = useState<'all' | 'day' | 'week' | 'month'>('all');
 
   const loadHistory = async () => {
     const data = await getHistory();
@@ -85,6 +87,45 @@ export default function HistoryScreen() {
     });
   };
 
+  const getFilteredHistory = () => {
+    const now = new Date();
+    const filterDate = new Date();
+
+    switch (filterPeriod) {
+      case 'day':
+        filterDate.setHours(0, 0, 0, 0);
+        break;
+      case 'week':
+        filterDate.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        filterDate.setMonth(now.getMonth() - 1);
+        break;
+      default:
+        return history;
+    }
+
+    return history.filter(item => new Date(item.timestamp) >= filterDate);
+  };
+
+  const calculateTotalSpent = () => {
+    const filteredHistory = getFilteredHistory();
+    return filteredHistory.reduce((total, item) => total + item.price, 0);
+  };
+
+  const getFilterLabel = () => {
+    switch (filterPeriod) {
+      case 'day':
+        return 'I dag';
+      case 'week':
+        return 'Denne uken';
+      case 'month':
+        return 'Denne måneden';
+      default:
+        return 'Totalt';
+    }
+  };
+
   const renderItem = ({ item }: { item: ScanHistoryItem }) => (
     <View style={styles.historyItem}>
       <View style={styles.itemHeader}>
@@ -112,6 +153,9 @@ export default function HistoryScreen() {
     </View>
   );
 
+  const filteredHistory = getFilteredHistory();
+  const totalSpent = calculateTotalSpent();
+
   return (
     <View style={styles.container}>
       {history.length === 0 ? (
@@ -130,8 +174,30 @@ export default function HistoryScreen() {
         </View>
       ) : (
         <>
+          <View style={styles.spendingSummary}>
+            <View style={styles.spendingHeader}>
+              <Text style={styles.spendingTitle}>Forbruk</Text>
+              <TouchableOpacity
+                style={styles.filterButton}
+                onPress={() => {
+                  const periods: Array<'all' | 'day' | 'week' | 'month'> = ['all', 'day', 'week', 'month'];
+                  const currentIndex = periods.indexOf(filterPeriod);
+                  const nextIndex = (currentIndex + 1) % periods.length;
+                  setFilterPeriod(periods[nextIndex]);
+                }}
+              >
+                <Text style={styles.filterText}>{getFilterLabel()}</Text>
+                <Ionicons name="chevron-down" size={16} color="#8966d8" />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.spendingAmount}>{totalSpent.toFixed(2)} NOK</Text>
+            <Text style={styles.spendingSubtitle}>
+              {filteredHistory.length} {filteredHistory.length === 1 ? 'kjøp' : 'kjøp'}
+            </Text>
+          </View>
+
           <FlatList
-            data={history}
+            data={filteredHistory}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
@@ -267,5 +333,51 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
+  },
+  spendingSummary: {
+    backgroundColor: '#fff',
+    margin: 16,
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  spendingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  spendingTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  filterText: {
+    fontSize: 14,
+    color: '#8966d8',
+    fontWeight: '600',
+  },
+  spendingAmount: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#8966d8',
+    marginBottom: 4,
+  },
+  spendingSubtitle: {
+    fontSize: 14,
+    color: '#666',
   },
 });

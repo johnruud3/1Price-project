@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   header: {
-    backgroundColor: '#d9c8f8',
+    backgroundColor: '#8966d8',
     padding: 20,
     paddingTop: 60,
     paddingBottom: 24,
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#d9c8f8',
+    color: '#8966d8',
   },
   chartContainer: {
     backgroundColor: '#fff',
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   historyPrice: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#d9c8f8',
+    color: '#8966d8',
   },
   historyDate: {
     fontSize: 12,
