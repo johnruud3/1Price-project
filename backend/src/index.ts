@@ -19,7 +19,12 @@ app.use(express.json());
 app.use('/admin', express.static('public'));
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Pris-Appen API is running' });
+  res.json({
+    status: 'ok',
+    message: 'Pris-Appen API is running',
+    kassal_key_set: !!process.env.KASSAL_API_KEY,
+    kassal_key_length: process.env.KASSAL_API_KEY?.length || 0,
+  });
 });
 
 app.use('/api', evaluateRouter);
