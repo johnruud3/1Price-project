@@ -1,21 +1,13 @@
 {
-  "cli": {
-    "version": ">= 16.26.0",
-    "appVersionSource": "remote"
-  },
+  "cli": { "version": ">= 16.26.0", "appVersionSource": "remote" },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
+    "development": { "developmentClient": true, "distribution": "internal" },
+    "preview": { "distribution": "internal" },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "node": "20.18.0",
+      "env": { "NPM_CONFIG_LEGACY_PEER_DEPS": "true" }
     }
   },
-  "submit": {
-    "production": {}
-  }
+  "submit": { "production": {} }
 }
