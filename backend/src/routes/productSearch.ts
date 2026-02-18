@@ -9,7 +9,7 @@ interface KassalSearchProduct {
   vendor: string | null;
   ean: string | null;
   image: string | null;
-  current_price: number | null;
+  current_price: { price: number; unit_price: number | null; date: string } | number | null;
   current_unit_price: number | null;
   weight: number | null;
   weight_unit: string | null;
@@ -61,14 +61,23 @@ router.get('/search', async (req: Request, res: Response) => {
 
     const data = (await response.json()) as KassalSearchResponse;
 
+    const extractPrice = (cp: KassalSearchProduct['current_price']): number | null => {
+      if (cp == null) return null;
+      if (typeof cp === 'number') return cp;
+      return cp.price ?? null;
+    };
+
     const products = (data.data || [])
-      .filter((p) => p.current_price != null && p.current_price > 0)
+      .filter((p) => {
+        const price = extractPrice(p.current_price);
+        return price != null && price > 0;
+      })
       .map((p) => ({
         name: p.name,
         brand: p.brand || null,
         ean: p.ean,
         image: p.image || null,
-        current_price: p.current_price,
+        current_price: extractPrice(p.current_price),
         store_name: p.store?.name || null,
       }));
 

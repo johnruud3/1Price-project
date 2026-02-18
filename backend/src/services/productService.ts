@@ -8,7 +8,7 @@ interface KassalProduct {
   ean: string | null;
   image: string | null;
   description: string | null;
-  current_price: number | null;
+  current_price: { price: number; unit_price: number | null; date: string } | number | null;
   category?: { id: number; name: string }[];
 }
 
@@ -48,7 +48,9 @@ export async function lookupProduct(barcode: string): Promise<Product> {
         brand: product.brand || undefined,
         category: category || product.vendor || undefined,
         imageUrl: product.image || undefined,
-        currentPrice: product.current_price || undefined,
+        currentPrice: typeof product.current_price === 'object' && product.current_price
+          ? product.current_price.price
+          : product.current_price || undefined,
       };
     }
 
