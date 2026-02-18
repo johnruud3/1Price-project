@@ -11,9 +11,12 @@ router.get('/:barcode', async (req: Request, res: Response) => {
       return;
     }
     const product = await lookupProduct(barcode);
-    res.json({ imageUrl: product.imageUrl ?? null });
+    res.json({
+      imageUrl: product.imageUrl ?? null,
+      currentPrice: product.currentPrice ?? null,
+    });
   } catch (error) {
-    res.status(500).json({ imageUrl: null });
+    res.status(500).json({ imageUrl: null, currentPrice: null });
   }
 });
 

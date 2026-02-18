@@ -48,6 +48,7 @@ export async function lookupProduct(barcode: string): Promise<Product> {
         brand: product.brand || undefined,
         category: category || product.vendor || undefined,
         imageUrl: product.image || undefined,
+        currentPrice: product.current_price || undefined,
       };
     }
 

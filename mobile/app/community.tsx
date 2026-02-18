@@ -38,13 +38,16 @@ function CommunityCard({
   onPress: () => void;
 }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [storePrice, setStorePrice] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     fetch(`${API_URL}/api/product/${item.barcode}`)
       .then((res) => res.json())
-      .then((data: { imageUrl?: string | null }) => {
-        if (!cancelled && data.imageUrl) setImageUrl(data.imageUrl);
+      .then((data: { imageUrl?: string | null; currentPrice?: number | null }) => {
+        if (cancelled) return;
+        if (data.imageUrl) setImageUrl(data.imageUrl);
+        if (data.currentPrice) setStorePrice(data.currentPrice);
       })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -75,13 +78,22 @@ function CommunityCard({
         <View style={styles.cardContent}>
           <View style={styles.cardHeader}>
             <Text style={styles.productName} numberOfLines={2}>{item.product_name}</Text>
-            <View>
+            <View style={styles.priceColumn}>
               <Text style={styles.price}>{priceDisplay}</Text>
               {item.submission_count > 1 && (
                 <Text style={styles.countBadge}>{item.submission_count} bidrag</Text>
               )}
             </View>
           </View>
+
+          {storePrice && (
+            <View style={styles.storePriceRow}>
+              <Ionicons name="pricetag-outline" size={13} color={colors.primaryLight} />
+              <Text style={styles.storePriceText}>
+                Butikkpris: {storePrice} {item.currency}
+              </Text>
+            </View>
+          )}
 
           {/* Price quality badges */}
           {(isStablePrice || isPopular) && (
@@ -428,11 +440,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.accentGlow,
   },
+  priceColumn: {
+    alignItems: 'flex-end',
+  },
   countBadge: {
     fontSize: 11,
     color: colors.textMuted,
     marginTop: 2,
     textAlign: 'right',
+  },
+  storePriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(167, 139, 250, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: radii.sm,
+    marginBottom: spacing.sm,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: 'rgba(167, 139, 250, 0.15)',
+  },
+  storePriceText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primaryLight,
   },
   badgeRow: {
     flexDirection: 'row',

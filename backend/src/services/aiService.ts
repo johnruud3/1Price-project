@@ -54,10 +54,19 @@ EVALUERINGSKRITERIER:
 - Analyser produktkategori (meieri, snacks, drikke, etc.) og typiske prisnivåer
 - Vurder merkevareposisjonering (premium vs. butikkmerke)
 - Ta hensyn til norsk markedskontekst (Norge har generelt høyere priser)
+- Hvis butikkpris fra Kassal.app er oppgitt, bruk den som primærreferanse
 - Vær ærlig om usikkerhet - hvis du ikke har nok informasjon, si det tydelig
 - Svar alltid på norsk
 - Hold forklaringer korte og forbrukerrettede (2-3 setninger)
 - Vær hjelpsom, ikke nedlatende
+
+VIKTIGE PRODUKTKATEGORIER:
+- Tobakk/snus: Prisen gjelder ALLTID per boks/pakke. En boks snus koster typisk 80-120 kr.
+  Ikke anta multipakk med mindre produktnavnet eksplisitt sier det.
+- Drikkevarer: Prisen gjelder per flaske/boks med mindre annet er spesifisert.
+  Husk pant (2-3 kr) er ofte inkludert.
+- Godteri/snacks: Prisen gjelder per pose/pakke, ikke per kilo.
+- Prisen brukeren oppgir er ALLTID for én enkelt enhet av produktet.
 
 CONFIDENCE NIVÅER:
 - "high": 10+ fellesskapspriser (verifisert av mange brukere)
@@ -129,7 +138,13 @@ function buildPrompt(
     prompt += `Kategori: ${product.category}\n`;
   }
 
-  prompt += `Pris: ${price} ${currency}\n\n`;
+  prompt += `Pris: ${price} ${currency}\n`;
+
+  if (product.currentPrice) {
+    prompt += `Butikkpris fra Kassal.app: ${product.currentPrice} ${currency}\n`;
+  }
+
+  prompt += `\n`;
 
   // Add community price data if available
   if (priceStats) {

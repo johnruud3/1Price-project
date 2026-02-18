@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,12 @@ import {
   Alert,
   ViewStyle,
   Image,
+  Dimensions,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import { evaluatePrice, submitPrice } from '@/services/api';
 import { saveToHistory } from '@/services/storage';
 import { PriceEvaluation } from '@/types';
@@ -41,6 +43,7 @@ export default function ResultScreen() {
   const [storeName, setStoreName] = useState('');
   const [location, setLocation] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     if (!barcode) return;
@@ -95,10 +98,7 @@ export default function ResultScreen() {
       });
 
       setContributed(true);
-      Alert.alert(
-        'Takk!',
-        'Prisen din er lagt til i databasen og vil hjelpe andre brukere.'
-      );
+      setShowConfetti(true);
     } catch (error) {
       Alert.alert(
         'Feil',
@@ -330,6 +330,18 @@ export default function ResultScreen() {
           </View>
         )}
       </ScrollView>
+
+      {showConfetti && (
+        <ConfettiCannon
+          count={150}
+          origin={{ x: Dimensions.get('window').width / 2, y: -20 }}
+          autoStart
+          fadeOut
+          fallSpeed={2500}
+          colors={[colors.primary, colors.primaryLight, colors.accentGlow, colors.good, '#FBBF24', '#FB923C']}
+          onAnimationEnd={() => setShowConfetti(false)}
+        />
+      )}
     </LinearGradient>
   );
 }
