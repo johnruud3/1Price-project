@@ -3,6 +3,7 @@ export interface Product {
   brand?: string;
   category?: string;
   imageUrl?: string;
+  currentPrice?: number;
 }
 
 export interface EvaluateRequest {
