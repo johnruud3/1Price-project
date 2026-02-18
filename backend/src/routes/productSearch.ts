@@ -79,6 +79,7 @@ router.get('/search', async (req: Request, res: Response) => {
         image: p.image || null,
         current_price: extractPrice(p.current_price),
         store_name: p.store?.name || null,
+        store_logo: p.store?.logo || null,
       }));
 
     res.json({ products });

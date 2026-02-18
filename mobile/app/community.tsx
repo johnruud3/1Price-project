@@ -35,6 +35,7 @@ interface KassalProduct {
   image: string | null;
   current_price: number;
   store_name: string | null;
+  store_logo: string | null;
 }
 
 interface UnifiedFeedItem {
@@ -43,6 +44,7 @@ interface UnifiedFeedItem {
   image: string | null;
   kassalPrice: number | null;
   kassalStore: string | null;
+  kassalStoreLogo: string | null;
   communityMin: number | null;
   communityMax: number | null;
   submissionCount: number;
@@ -121,11 +123,15 @@ function UnifiedProductCard({
           <View style={styles.priceSection}>
             {hasKassal && (
               <View style={styles.kassalRow}>
-                <Ionicons name="pricetag" size={13} color={colors.primaryLight} />
-                <Text style={styles.kassalLabel}>Butikkpris</Text>
+                {item.kassalStoreLogo ? (
+                  <Image source={{ uri: item.kassalStoreLogo }} style={styles.storeLogo} resizeMode="contain" />
+                ) : (
+                  <Ionicons name="pricetag" size={13} color={colors.primaryLight} />
+                )}
+                <Text style={styles.kassalLabel}>Billigste butikkpris</Text>
                 <Text style={styles.kassalValue}>{storePrice} {item.currency}</Text>
                 {item.kassalStore && (
-                  <Text style={styles.kassalStore}>({item.kassalStore})</Text>
+                  <Text style={styles.kassalStore}>{item.kassalStore}</Text>
                 )}
               </View>
             )}
@@ -306,6 +312,7 @@ export default function CommunityScreen() {
         image: null,
         kassalPrice: null,
         kassalStore: null,
+        kassalStoreLogo: null,
         communityMin: s.min_price,
         communityMax: s.max_price,
         submissionCount: s.submission_count,
@@ -323,8 +330,11 @@ export default function CommunityScreen() {
 
       const existing = map.get(ean);
       if (existing) {
-        existing.kassalPrice = kp.current_price;
-        existing.kassalStore = kp.store_name;
+        if (existing.kassalPrice == null || kp.current_price < existing.kassalPrice) {
+          existing.kassalPrice = kp.current_price;
+          existing.kassalStore = kp.store_name;
+          existing.kassalStoreLogo = kp.store_logo;
+        }
         if (!existing.image && kp.image) existing.image = kp.image;
         if (!existing.brand && kp.brand) existing.brand = kp.brand;
       } else {
@@ -334,6 +344,7 @@ export default function CommunityScreen() {
           image: kp.image,
           kassalPrice: kp.current_price,
           kassalStore: kp.store_name,
+          kassalStoreLogo: kp.store_logo,
           communityMin: null,
           communityMax: null,
           submissionCount: 0,
@@ -626,6 +637,11 @@ const styles = StyleSheet.create({
     borderRadius: radii.sm,
     borderWidth: 1,
     borderColor: 'rgba(167, 139, 250, 0.2)',
+  },
+  storeLogo: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
   },
   kassalLabel: {
     fontSize: 12,
