@@ -20,13 +20,10 @@ export default function HomeScreen() {
           resizeMode="contain"
         />
         <Text style={styles.subtitle}>
-          Skann strekkoder og få AI-drevet prisvurdering
+          Skann strekkoder og få prisvurderinger fra AI
         </Text>
         <Text style={styles.subtitle2}>
-          Sammenlign med fellesskapet
-        </Text>
-        <Text style={styles.subtitle3}>
-          Følg prisutvikling!
+          Få tilbudspriser fra nærmeste butikk
         </Text>
       </View>
 
@@ -36,7 +33,9 @@ export default function HomeScreen() {
         resizeMode="contain"
       />
       <View>
-        <Text style={styles.cautionText}>Appen er i testing. Systemer kan være utilregnelige. Dersom du finner feil eller appen crasher, vennligst del crashreport</Text>
+        <Text style={styles.cautionText}>
+          Denne versjonen er en betaversjon. Du kan oppleve feil eller ustabilitet. Ved crash eller feil: del gjerne crash-rapport og gi tilbakemelding via TestFlight.
+        </Text>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -137,14 +136,6 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     lineHeight: 12,
   },
-  subtitle3: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.75)',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 0,
-    lineHeight: 12,
-  },
   logo2: {
     width: '170%',
     height: '50%',
@@ -152,14 +143,18 @@ const styles = StyleSheet.create({
     marginVertical: -70,
   },
   cautionText: {
-    fontSize: 17,
-    color: colors.textMuted,
-    paddingLeft: 70,
-    paddingRight: 70,
+    fontSize: 15,
+    color: colors.textSecondary,
     textAlign: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 65,
-    lineHeight: 19,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    marginHorizontal: 20,
+    marginBottom: 24,
+    lineHeight: 22,
+    backgroundColor: colors.glassBg,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    borderRadius: 12,
   },
   buttonContainer: {
     gap: spacing.sm + 4,

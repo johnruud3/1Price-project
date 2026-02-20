@@ -164,7 +164,7 @@ export function UnifiedProductCard(props: Props) {
             {hasKassal && (
               <View style={styles.kassalRow}>
                 {storeLogo ? <SvgUri uri={storeLogo} width={18} height={18} /> : <Ionicons name="pricetag" size={13} color={colors.primaryLight} />}
-                <Text style={styles.kassalLabel}>Billigste butikkpris</Text>
+                <Text style={styles.kassalLabel}>Butikkpris</Text>
                 <Text style={styles.kassalValue}>{storePrice} {item.currency}</Text>
                 {storeName && <Text style={styles.kassalStore}>{storeName}</Text>}
               </View>
